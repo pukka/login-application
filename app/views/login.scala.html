@@ -1,0 +1,13 @@
+@(title: String, LoginForm: Form[(String,String)])
+@main(title){
+    <h1>@title</h1>
+      @helper.form(action = routes.Application.login) {
+      @helper.inputText(LoginForm("name"))
+      @helper.inputText(LoginForm("password"))
+
+      <input type="submit">
+    }
+
+    <a href="/new_user">アカウントをお持ちでない方</a>
+
+}

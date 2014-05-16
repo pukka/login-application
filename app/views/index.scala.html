@@ -1,0 +1,77 @@
+@(title: String,id: Long, datas: List[EveryThing], TaskForm: Form[Task])
+
+@main("Welcome to Play") {
+  <h1>@title</h1>
+  @helper.form(action = routes.TaskController.CreateTask) {
+    @helper.select(TaskForm("year"),
+     options = helper.options(("2014年","2014年"),("2015年","2015年"),("2016年","2016年")),
+     '_default -> "--- Choose ---",
+     'size -> "1",
+     '_help -> ""
+    )
+  
+    @helper.select(TaskForm("month"),
+     options = helper.options(("1月","1月"),("2月","2月"),("3月","3月"),("4月","4月"),("5月","5月")
+                 ,("6月","6月"),("7月","7月"),("8月","8月"),("9月","9月"),("10月","10月"),("11月","11月")
+                 ,("12月","12月")
+               ),
+     '_default -> "--- Choose ---",
+     'size -> "1",
+     '_help -> ""
+    )
+
+    @helper.select(TaskForm("date"),
+     options = helper.options(("1日","1日"),("2日","2日"),("3日","3日"),("4日","4日"),("5日","5日")
+                 ,("6日","6日"),("7日","7日"),("8日","8日"),("9日","9日"),("10日","10日"),("11日","11日")
+                 ,("12日","12日"),("13日","13日"),("14日","14日"),("15日","15日"),("16日","16日"),("17日","17日")
+                 ,("18日","18日"),("19日","19日"),("20日","20日"),("21日","21日"),("22日","22日"),("23日","23日")
+                 ,("24日","24日"),("25日","25日"),("26日","26日"),("27日","27日"),("28日","28日"),("29日","29日")
+                 ,("30日","30日"),("31日","31日")
+    ),
+     '_default -> "--- Choose ---",
+     'size -> "1",
+     '_help -> ""
+    )
+
+    @helper.select(TaskForm("hour"),
+     options = helper.options(("0時","0時"),("1時","1時"),("2時","2時"),("3時","3時"),("4時","4時"),("5時","5時"),
+                              ("6時","6時"),("7時","7時"),("8時","8時"),("9時","9時"),("10時","10時"),("11時","11時"),
+                              ("12時","12時"),("13時","13時"),("14時","14時"),("15時","15時"),("16時","16時"),("17時","17時"),
+                              ("18時","18時"),("19時","19時"),("20時","20時"),("21時","21時"),("22時","22時"),("23時","23時")
+     ),
+     '_default -> "--- Choose ---",
+     'size -> "1",
+     '_help -> ""
+    )
+
+    @helper.select(TaskForm("minute"),
+     options = helper.options(("00分","00分"),("10分","10分"),("20分","20分"),("30分","30分"),("40分","40分"),("50分","50分")
+     ),
+     '_default -> "--- Choose ---",
+     'size -> "1",
+     '_help -> "" 
+    )
+
+    @helper.inputText(TaskForm("work"))
+    <input type="hidden" value="@id" name="id">
+    <input type="submit">
+  }
+  <hr>
+    @if(datas != null){
+     <p>タスクリスト</p>
+     <ul>
+     @datas.map { data =>
+       <li>
+       @data.date
+       @data.time
+       @data.work
+       @helper.form(routes.TaskController.DeleteTask(data.id)) {
+         <input type="submit" value="Delete">
+       }
+       </li>
+     }
+    </ul>
+    }
+
+  <a href="/logout">ログアウト</a>
+}

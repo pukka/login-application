@@ -1,0 +1,18 @@
+@(title: String, CreateForm: Form[User])
+@main(title){
+
+  <h1>@title</h1>
+
+  @helper.form(action = routes.Application.CreateUser){
+    @helper.inputText(CreateForm("name"),
+      '_label -> "Your name",
+      'placeholder -> "Jon Smith"
+    )
+    @helper.inputText(CreateForm("password"),
+      '_label -> "Password",
+      'placeholder -> "secret"
+    )
+
+    <input type="submit">
+  }
+}

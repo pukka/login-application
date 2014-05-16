@@ -1,0 +1,6 @@
+# --- Constraints
+constraint.name = お名前を入力して下さい。
+constraint.password = パスワードを入力して下さい。
+# --- Errors
+error.name = もう一度入力し直して下さい。
+error.password = もう一度入力し直して下さい。
