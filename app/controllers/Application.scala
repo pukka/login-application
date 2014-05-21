@@ -39,6 +39,15 @@ object Application extends Controller {
     )(Task.apply)(Task.unapply)
   )
 
+  val ChangeForm = Form(
+    mapping(
+      "id" -> longNumber,
+      "date" -> text,
+      "time" -> text,
+      "work" -> nonEmptyText
+    )(EveryThing.apply)(EveryThing.unapply)
+  )
+
   def index = Action { implicit request =>
     val title = "Login Test"
     
@@ -46,7 +55,7 @@ object Application extends Controller {
       val NumberData:Long = UserNumber.Number(UserData)
       val hello:String = "Hello, " + UserData + " !"
       val allTask = EveryThing.all(NumberData)
-      Ok(views.html.index(hello, NumberData, allTask, TaskForm))
+      Ok(views.html.index(hello, NumberData, allTask, TaskForm, ChangeForm))
     }.getOrElse {
       Ok(views.html.login(title, LoginForm))
     }

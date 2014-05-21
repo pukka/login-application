@@ -1,4 +1,4 @@
-@(title: String,id: Long, datas: List[EveryThing], TaskForm: Form[Task])
+@(title: String,id: Long, datas: List[EveryThing], TaskForm: Form[Task], ChangeForm: Form[EveryThing])
 
 @main("Welcome to Play") {
   <h1>@title</h1>
@@ -62,9 +62,13 @@
      <ul>
      @datas.map { data =>
        <li>
-       @data.date
-       @data.time
-       @data.work
+       @helper.form(routes.TaskController.UpData(data.id)) {
+         <input type="text" value="@data.date" name="date">
+         <input type="text" value="@data.time" name="time">
+         <input type="text" value="@data.work" name="work">
+         <input type="hidden" value="@id" name="id">
+         <input type="submit" value="Change">
+       }
        @helper.form(routes.TaskController.DeleteTask(data.id)) {
          <input type="submit" value="Delete">
        }

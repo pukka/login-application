@@ -31,6 +31,13 @@ case class EveryThing(id: Long, date: String, time: String, work: String)
         SQL("select * from tasks where user_id = {id}").on('id -> id).as(schedule *)
       }
     }
+
+    def TaskChange(taskNumber:Long, task: EveryThing) = {
+      DB.withConnection { implicit c =>
+        val count = SQL("update tasks set date = {date}, time = {time}, work = {work} where id = {id}").
+                     on('date -> task.date, 'time -> task.time, 'work -> task.work, 'id -> taskNumber).executeUpdate()
+      }
+    }
   }
 
 class UserNumber(id: Long)

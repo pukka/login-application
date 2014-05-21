@@ -8,6 +8,7 @@ POST    /sendform                   controllers.Application.login
 GET     /new_user                   controllers.Application.NewUser
 POST    /CreateUser                 controllers.Application.CreateUser
 POST    /CreateTask                 controllers.TaskController.CreateTask
+POST    /:id/ChangeTask             controllers.TaskController.UpData(id:Long)
 POST    /:id/delete                 controllers.TaskController.DeleteTask(id:Long)
 GET     /logout                     controllers.Application.logout 
 
