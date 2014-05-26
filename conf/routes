@@ -3,14 +3,14 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
-POST    /sendform                   controllers.Application.login     
-GET     /new_user                   controllers.Application.NewUser
-POST    /CreateUser                 controllers.Application.CreateUser
-POST    /CreateTask                 controllers.TaskController.CreateTask
-POST    /:id/ChangeTask             controllers.TaskController.UpData(id:Long)
-POST    /:id/delete                 controllers.TaskController.DeleteTask(id:Long)
-GET     /logout                     controllers.Application.logout 
+GET     /                           controllers.TaskController.index
+POST    /sendform                   controllers.TaskController.login     
+GET     /new_user                   controllers.Application.newUser
+POST    /CreateUser                 controllers.Application.createUser
+POST    /CreateTask                 controllers.TaskController.createTask
+POST    /:id/ChangeTask             controllers.TaskController.upData(id:Long)
+POST    /:id/delete                 controllers.TaskController.deleteTask(id:Long)
+GET     /logout                     controllers.TaskController.logout 
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
