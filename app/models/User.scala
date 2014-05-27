@@ -6,7 +6,9 @@ import play.api.Play.current
 import anorm._
 import anorm.SqlParser._
 
-// ユーザー追加
+/**
+ * ユーザー追加
+ */
 case class User ( name: String, password: String ) {
   def addData {
   DB.withConnection { implicit c =>
@@ -16,16 +18,20 @@ case class User ( name: String, password: String ) {
  } 
 }
 
-// 登録済みタスク
+/**
+ * 登録済みタスク
+ */
 case class AllTask ( id: Long, date: String, time: String, work: String )
 
-// ID検索
+/**
+ * ID検索
+ */
 class UserNumber ( id: Long )
 
 /**
-* タスク追加クラス
-* 受け取った値を結合させて、DB登録
-*/ 
+ * タスク追加クラス
+ * 受け取った値を結合させて、DB登録
+ */ 
 case class Task ( id: Long, year: String, month: String, date: String, hour: String, minute: String, work: String ) {
   def addTask( id: Long ) = {
    val Date = year + month + date
@@ -39,7 +45,9 @@ case class Task ( id: Long, year: String, month: String, date: String, hour: Str
 
   object UserNumber {
 
-    //  引数でユーザ名を受け取り、番号を返す
+    /**
+     *  引数でユーザ名を受け取り、番号を返す
+     */
     def Number ( name: String ) : Long = {
       DB.withConnection { implicit c =>
         val id:Long = SQL ( " select id from users where name = {name} " ).
@@ -48,39 +56,43 @@ case class Task ( id: Long, year: String, month: String, date: String, hour: Str
       }
     }
   
-    // 引数で番号を受け取り、タスクを削除
+    /*
+     * 引数で番号を受け取り、タスクを削除
+     */
     def delete ( id: Long ) {
       DB.withConnection { implicit c =>
-        SQL ( " delete from tasks where id = { id } " ).on ( 'id -> id ).executeUpdate()
+        SQL ( " delete from tasks where id = {id} " ).on ( 'id -> id ).executeUpdate()
       }
     }
   }  
 
-  // 登録済みタスクを扱うオブジェクト
+  /**
+   * 登録済みタスクを扱うオブジェクト
+   */
   object AllTask {
     val schedule = {
-      get[ Long ] ( " id " ) ~
-      get[ String ] ( " date " ) ~
-      get[ String ] ( " time " ) ~
-      get[ String ] ( " work " ) map {
+      get[ Long ] ( "id" ) ~
+      get[ String ] ( "date" ) ~
+      get[ String ] ( "time" ) ~
+      get[ String ] ( "work" ) map {
         case id ~ date ~ time ~ work => AllTask ( id, date, time, work )
       }
     }
 
-   /**
-    * 引数でユーザ番号を受け取り、そのユーザの登録済みタスクを全て検索
-    * Listにして値を返す 
-    */   
+    /**
+     * 引数でユーザ番号を受け取り、そのユーザの登録済みタスクを全て検索
+     * Listにして値を返す 
+     */   
     def all ( id: Long ): List [ AllTask ] = {
       DB.withConnection { implicit c =>
         SQL ( " select * from tasks where user_id = {id} " ).on ( 'id -> id).as ( schedule * )
       }
     }
 
-   /*
-    * タスク変更メソッド
-    * 引数でタスクの番号と変更内容を受け取り、情報を更新
-    */
+    /*
+     * タスク変更メソッド
+     * 引数でタスクの番号と変更内容を受け取り、情報を更新
+     */
     def change ( taskNumber: Long, task: AllTask ) = {
       DB.withConnection { implicit c =>
         val count = SQL ( " update tasks set date = {date}, time = {time}, work = {work} where id = {id} " ).
@@ -97,11 +109,11 @@ case class Task ( id: Long, year: String, month: String, date: String, hour: Str
       }
     }
 
-   /*
-    * ユーザを検索するメソッド
-    * 引数でユーザ名とパスワードを受け取り、
-    * 検索結果をOption型で返す
-    */
+    /*
+     * ユーザを検索するメソッド
+     * 引数でユーザ名とパスワードを受け取り、
+     * 検索結果をOption型で返す
+     */
     def LoginCheck ( name: String, password: String ): Option[ User ] = {
       DB.withConnection { implicit c =>
         SQL(

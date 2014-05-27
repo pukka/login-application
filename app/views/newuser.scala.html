@@ -4,6 +4,7 @@
   <h1>@title</h1>
 
   @helper.form(action = routes.Application.createUser){
+    <fieldset>
     <div class = "form-group">
       <label class = "col-sm-2 control-label">ユーザ名</label>
       <div class = "col-sm-10">
@@ -22,6 +23,7 @@
       <div class = "col-sm-offset-2 col-sm-10">
         <button type = "submit" class = "btn btn-primary">アカウント作成</button>
       </div>
+    </fieldset> 
   }
   
   <a href = "/">ログインページに戻る</a> 

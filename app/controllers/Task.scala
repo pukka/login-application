@@ -9,10 +9,14 @@ import play.api.data._
 import play.api.data.Forms._
 
 
-// タスクの管理を扱うオブジェクト
+/**
+ * タスクの管理を扱うオブジェクト
+ */
 object TaskController extends Controller {
 
-  // ログインフォーム
+  /**
+   * ログインフォーム
+   */
   val LoginForm = Form (
     tuple (
       "name" -> nonEmptyText,
@@ -22,7 +26,9 @@ object TaskController extends Controller {
     })
   )
 
-  // タスク追加のマッピング
+  /**
+   * タスク追加のマッピング
+   */
   val TaskForm = Form (
     mapping (
       "id" -> longNumber,
@@ -35,7 +41,9 @@ object TaskController extends Controller {
     ) ( Task.apply ) ( Task.unapply )
   )
 
-  // タスク変更のマッピング
+  /**
+   * タスク変更のマッピング
+   */
   val ChangeForm = Form (
     mapping (
       "id" -> longNumber,
@@ -45,12 +53,12 @@ object TaskController extends Controller {
     ) ( AllTask.apply ) ( AllTask.unapply )
   )
 
- /**
-  * ログイン後のページを表示するメソッド
-  * セッションを確認後、ユーザーの名前と番号を確認し、
-  * 問題がなければ、会員ページを表示
-  * セッション情報がなければ、ログインページへリダイレクトする
-  */
+  /**
+   * ログイン後のページを表示するメソッド
+   * セッションを確認後、ユーザーの名前と番号を確認し、
+   * 問題がなければ、会員ページを表示
+   * セッション情報がなければ、ログインページへリダイレクトする
+   */
   def index = Action { implicit request =>
     val title = "Login Test"
 
@@ -64,12 +72,12 @@ object TaskController extends Controller {
     }
   }
 
- /**
-  * ログインをチェックするメソッド
-  * フォームに正しくデータがマッピングできていれば、
-  * cookieにセッション情報を保存後、TaskController.indexにリダイレクト
-  * エラーがあれば、BadRequestで、views.html.loginへ戻す
-  */
+  /**
+   * ログインをチェックするメソッド
+   * フォームに正しくデータがマッピングできていれば、
+   * cookieにセッション情報を保存後、TaskController.indexにリダイレクト
+   * エラーがあれば、BadRequestで、views.html.loginへ戻す
+   */
   def login = Action { implicit request =>
     LoginForm.bindFromRequest.fold (
       errors => BadRequest ( views.html.login ( "ERROR", errors ) ) ,
@@ -84,19 +92,19 @@ object TaskController extends Controller {
     )
   }
 
- /**
-  * ログアウトするためのメソッド
-  * セッションを解放し、TaskController.indexメソッドにリダイレクト
-  */
+  /**
+   * ログアウトするためのメソッド
+   * セッションを解放し、TaskController.indexメソッドにリダイレクト
+   */
   def logout = Action {
     Redirect ( routes.TaskController.index ) .withNewSession
   }
 
- /**
-  * タスク追加のメソッド
-  * セッションがsuccessであれば、
-  * modelsのdata.addTaskメソッドにフォーム内容を渡す
-  */
+  /**
+   * タスク追加のメソッド
+   * セッションがsuccessであれば、
+   * modelsのdata.addTaskメソッドにフォーム内容を渡す
+   */
   def createTask = Action { implicit request =>
     session.get ( "UserData" ) .map { UserData =>
       val NumberData:Long = UserNumber.Number ( UserData )
@@ -114,11 +122,11 @@ object TaskController extends Controller {
     }
   }
 
- /**
-  * タスク変更のメソッド
-  * セッションがsuccessであれば、
-  * modelsのAllTask.changeメソッドにフォーム内容を渡す
-  */
+  /**
+   * タスク変更のメソッド
+   * セッションがsuccessであれば、
+   * modelsのAllTask.changeメソッドにフォーム内容を渡す
+   */
   def upData ( TaskNumber: Long ) = Action { implicit request =>
     session.get ( "UserData" ) .map { UserData =>
       val NumberData: Long = UserNumber.Number ( UserData )
@@ -135,10 +143,10 @@ object TaskController extends Controller {
     }
   }
 
- /**
-  * タスク削除のメソッド
-  * 引数でタスク番号を受け取り、modelsのdeleteメソッドに渡す
-  */
+  /**
+   * タスク削除のメソッド
+   * 引数でタスク番号を受け取り、modelsのdeleteメソッドに渡す
+   */
   def deleteTask ( id: Long ) = Action {
     UserNumber.delete ( id )
     Redirect ( routes.TaskController.index )
