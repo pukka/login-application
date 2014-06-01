@@ -19,12 +19,91 @@ class ApplicationSpec extends Specification {
       route(FakeRequest(GET, "/boum")) must beNone
     }
 
+    /** routesのテスト  */
     "render the index page" in new WithApplication{
       val home = route(FakeRequest(GET, "/")).get
 
       status(home) must equalTo(OK)
-      contentType(home) must beSome.which(_ == "text/html")
-      contentAsString(home) must contain ("Your new application is ready.")
+      contentType(home) must beSome("text/html")
+    }
+
+    "render the newuser page" in new WithApplication{
+      val home = route(FakeRequest(GET, "/new_user")).get
+
+      status(home) must equalTo(OK)
+      contentType(home) must beSome("text/html")
+    }
+
+    "render the login page" in new WithApplication{
+      val home = route(FakeRequest(POST, "/sendform")).get
+      
+      status(home) must equalTo(400)
+      contentType(home) must beSome("text/html")
+    }
+
+    /** controllersのテスト  */
+
+    "respond to the index Action" in {
+      val result = controllers.TaskController.index()(FakeRequest())
+
+      status(result) must equalTo(OK)
+      contentType(result) must beSome("text/html")
+      charset(result) must beSome("utf-8")
+    }
+
+    "respond to the newUser Action" in {
+      val result = controllers.Application.newUser()(FakeRequest())
+
+      status(result) must equalTo(OK)
+      contentType(result) must beSome("text/html")
+      charset(result) must beSome("utf-8")
+      contentAsString(result) must contain("新規ユーザー登録")
+    }
+
+    "respond to the createUser Action" in {
+      val result = controllers.Application.createUser()(FakeRequest())
+
+      status(result) must equalTo(400)
+      contentType(result) must beSome("text/html")
+      charset(result) must beSome("utf-8")
+    }
+
+    /** TaskControllerのテスト  */
+
+    "respond to the login Action" in {
+     val result = controllers.TaskController.login()(FakeRequest())
+
+     status(result) must equalTo(400)
+     contentType(result) must beSome("text/html")
+     charset(result) must beSome("utf-8")
+    }
+
+    "respond to the logout Action" in {
+      val result = controllers.TaskController.logout()(FakeRequest())
+
+      status(result) must equalTo(303)
+    }
+
+    "respond to the createTask Action" in {
+     val result = controllers.TaskController.createTask()(FakeRequest())
+
+     status(result) must equalTo(400)
+     contentType(result) must beSome("text/html")
+     charset(result) must beSome("utf-8")
+    }
+
+    "respond to the upData Action" in {
+      val result = controllers.TaskController.upData()(FakeRequest())
+
+     status(result) must equalTo(400)
+     contentType(result) must beSome("text/html")
+     charset(result) must beSome("utf-8")
+    }
+
+    "respond to the deleteTask Action" in {
+      val result = controllers.TaskController.deleteTask()(FakeRequest())
+
+      status(result) must equalTo(303)
     }
   }
 }
