@@ -18,20 +18,20 @@ object Application extends Controller {
   /** 
    * 新規ユーザ登録のマッピング
    */
-  val CreateForm = Form (
-    mapping (
+  val CreateForm = Form(
+    mapping(
       "name" -> nonEmptyText,
       "password" -> nonEmptyText
-    ) ( User.apply ) ( User.unapply )
+    )( User.apply )( User.unapply )
   )
 
   /**
    * 新規ユーザ登録用のページを表示するメソッド
    * リクエストがあれば、タイトルとフォームをviews.html.newuerへ渡す
    */
-  def newUser = Action { implicit request =>
+  def newUser = Action{ implicit request =>
     val title = "新規ユーザー登録"
-    Ok ( views.html.newuser ( title, CreateForm ) )
+    Ok ( views.html.newuser( title, CreateForm ))
   }
 
   /**
@@ -39,15 +39,19 @@ object Application extends Controller {
    * フォームに値が正しくマッピングされていれば、値をmodelsのdata.addDataに渡す
    * その後、ログインページに戻る
    */
-  def createUser = Action { implicit request =>
-    CreateForm.bindFromRequest.fold (
-      errors => BadRequest ( views.html.newuser ( "ERROR", errors ) ) ,
+  def createUser = Action{ implicit request =>
+    CreateForm.bindFromRequest.fold(
+      errors => BadRequest( views.html.newuser( "ERROR", errors )),
       success => {
-        val data: User = CreateForm.bindFromRequest.get
-        val result = data.addData
-        Redirect ( routes.TaskController.index ) .withSession (
-            session + ( "UserData" -> data.name )
-        )       
+        val result = User.addData(success)
+        if(result == true) {
+          Redirect( routes.TaskController.index ).withSession(
+            session + ( "UserData" -> success.name )
+          )
+        } else {
+          val title = "同じ名前のユーザがいます。"
+	  Ok ( views.html.newuser( title, CreateForm ))
+        }
       }
     )
   }

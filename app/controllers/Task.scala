@@ -18,18 +18,18 @@ object TaskController extends Controller {
    * ログインフォーム
    */
   val LoginForm = Form (
-    tuple (
+    tuple(
       "name" -> nonEmptyText,
       "password" -> nonEmptyText
-    ) verifying ( "Invalid name or password" , result => result match {
-      case ( name, password ) => User.LoginCheck ( name, password ).isDefined
+    )verifying( "Invalid name or password", result => result match {
+      case( name, password ) => User.findUser( name, password ).isDefined
     })
   )
 
   /**
    * タスク追加のマッピング
    */
-  val TaskForm = Form (
+  val TaskForm = Form(
     mapping (
       "id" -> longNumber,
       "year" -> text,
@@ -38,7 +38,7 @@ object TaskController extends Controller {
       "hour" -> text,
       "minute" -> text,
       "work" -> nonEmptyText
-    ) ( Task.apply ) ( Task.unapply )
+    )( Task.apply )( Task.unapply )
   )
 
   /**
@@ -50,7 +50,7 @@ object TaskController extends Controller {
       "date" -> text,
       "time" -> text,
       "work" -> nonEmptyText
-    ) ( AllTask.apply ) ( AllTask.unapply )
+    )( AllTask.apply )( AllTask.unapply )
   )
 
   /**
@@ -60,15 +60,15 @@ object TaskController extends Controller {
    * セッション情報がなければ、ログインページへリダイレクトする
    */
   def index = Action { implicit request =>
-    val title = "Login Test"
+    val title = "Sample Application for CloudFoundry"
 
-    session.get ( "UserData" ) .map { UserData =>
-      val NumberData:Long = UserNumber.Number ( UserData )
+    session.get( "UserData" ).map { UserData =>
+      val numberData:Long = UserNumber.number( UserData )
       val hello:String = "ようこそ, " + UserData + " !"
-      val allTask = AllTask.all ( NumberData )
-      Ok ( views.html.index ( hello, NumberData, allTask, TaskForm, ChangeForm ) )
-    } .getOrElse {
-      Ok ( views.html.login ( title, LoginForm ) )
+      val allTask = AllTask.all( numberData )
+      Ok( views.html.index( hello, numberData, allTask, TaskForm, ChangeForm ))
+    }.getOrElse {
+      Ok( views.html.login( title, LoginForm ))
     }
   }
 
@@ -80,13 +80,10 @@ object TaskController extends Controller {
    */
   def login = Action { implicit request =>
     LoginForm.bindFromRequest.fold (
-      errors => BadRequest ( views.html.login ( "ERROR", errors ) ) ,
+      errors => BadRequest( views.html.login( "ERROR", errors )),
       success => {
-        val data: ( String, String ) = LoginForm.bindFromRequest.get
-        val name: String = data._1
-
         Redirect ( routes.TaskController.index ) .withSession (
-            session + ( "UserData" -> name )
+            session + ( "UserData" -> success._1 )
         )
       }
     )
@@ -107,14 +104,14 @@ object TaskController extends Controller {
    */
   def createTask = Action { implicit request =>
     session.get ( "UserData" ) .map { UserData =>
-      val NumberData:Long = UserNumber.Number ( UserData )
+      val numberData:Long = UserNumber.number ( UserData )
       TaskForm.bindFromRequest.fold (
-        errors => BadRequest ( views.html.index ( "ERROR", NumberData, AllTask.all ( NumberData ), errors, ChangeForm ) ) ,
+        errors => BadRequest ( views.html.index ( "ERROR", numberData, AllTask.all ( numberData ), errors, ChangeForm ) ) ,
         success => {
           val data: Task = TaskForm.bindFromRequest.get
-          val result = data.addTask ( NumberData )
+          val result = data.addTask ( numberData )
           val title = "タスクが追加されました。"
-          Ok ( views.html.index ( title, NumberData, AllTask.all ( NumberData ), TaskForm, ChangeForm ) )
+          Ok ( views.html.index ( title, numberData, AllTask.all ( numberData ), TaskForm, ChangeForm ) )
         }
       )
     }.getOrElse {
@@ -127,14 +124,14 @@ object TaskController extends Controller {
    * セッションがsuccessであれば、
    * modelsのAllTask.changeメソッドにフォーム内容を渡す
    */
-  def upData ( TaskNumber: Long ) = Action { implicit request =>
+  def upData ( taskNumber: Long ) = Action { implicit request =>
     session.get ( "UserData" ) .map { UserData =>
-      val NumberData: Long = UserNumber.Number ( UserData )
+      val numberData: Long = UserNumber.number ( UserData )
       ChangeForm.bindFromRequest.fold (
-        errors => BadRequest ( views.html.index ( "ERROR", NumberData, AllTask.all ( NumberData ), TaskForm, errors ) ) ,
+        errors => BadRequest ( views.html.index ( "ERROR", numberData, AllTask.all ( numberData ), TaskForm, errors ) ) ,
         success => {
           val data: AllTask = ChangeForm.bindFromRequest.get
-          val result = AllTask.change( TaskNumber, data )
+          val result = AllTask.change( taskNumber, data )
           Redirect ( routes.TaskController.index )
         }
       )

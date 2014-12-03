@@ -1,4 +1,4 @@
-name := "login_system"
+name := "login-system"
 
 version := "1.0-SNAPSHOT"
 

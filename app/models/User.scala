@@ -7,16 +7,9 @@ import anorm._
 import anorm.SqlParser._
 
 /**
- * ユーザー追加
+ * ユーザーデータ
  */
-case class User ( name: String, password: String ) {
-  def addData {
-  DB.withConnection { implicit c =>
-     val id: Int = SQL ( "insert into users ( name, password ) values ( {name}, {password} ) " ).
-                    on ( 'name -> name, 'password -> password ).executeUpdate()
-  }
- } 
-}
+case class User(name: String, password: String)
 
 /**
  * 登録済みタスク
@@ -26,13 +19,13 @@ case class AllTask ( id: Long, date: String, time: String, work: String )
 /**
  * ID検索
  */
-class UserNumber ( id: Long )
+case class UserNumber ( id: Long )
 
 /**
  * タスク追加クラス
  * 受け取った値を結合させて、DB登録
  */ 
-case class Task ( id: Long, year: String, month: String, date: String, hour: String, minute: String, work: String ) {
+case class Task ( id: Long, year: String, month: String, date: String, hour: String, minute: String, work: String ){
   def addTask( id: Long ) = {
    val Date = year + month + date
    val Time = hour + minute
@@ -48,20 +41,20 @@ case class Task ( id: Long, year: String, month: String, date: String, hour: Str
     /**
      *  引数でユーザ名を受け取り、番号を返す
      */
-    def Number ( name: String ) : Long = {
-      DB.withConnection { implicit c =>
-        val id:Long = SQL ( " select id from users where name = {name} " ).
-                        on( 'name -> name ).as ( scalar [ Long ] .single )
-        return id ;
+    def number( name: String ): Long = {
+      DB.withConnection{ implicit c =>
+        val id:Long = SQL( " select id from users where name = {name} " ).
+                       on( 'name -> name ).as(scalar[Long].single)
+        return id;
       }
     }
   
     /*
      * 引数で番号を受け取り、タスクを削除
      */
-    def delete ( id: Long ) {
+    def delete( id: Long ) = {
       DB.withConnection { implicit c =>
-        SQL ( " delete from tasks where id = {id} " ).on ( 'id -> id ).executeUpdate()
+        SQL(" delete from tasks where id = {id} ").on( 'id -> id ).executeUpdate()
       }
     }
   }  
@@ -109,12 +102,27 @@ case class Task ( id: Long, year: String, month: String, date: String, hour: Str
       }
     }
 
+
+    def addData( data: User): Boolean = {
+      val result = User.findUser( data.name, data.password )
+      if(result == None){
+        DB.withConnection { implicit c =>
+          val id: Int = SQL( "insert into users( name, password )values( {name}, {password} )").
+                      on( 'name -> data.name, 'password -> data.password ).executeUpdate()
+        }
+        return true
+      } else {
+        return false
+      }
+   } 
+
+
     /*
      * ユーザを検索するメソッド
      * 引数でユーザ名とパスワードを受け取り、
      * 検索結果をOption型で返す
      */
-    def LoginCheck ( name: String, password: String ): Option[ User ] = {
+    def findUser( name: String, password: String ): Option[ User ] = {
       DB.withConnection { implicit c =>
         SQL(
           """
@@ -124,8 +132,7 @@ case class Task ( id: Long, year: String, month: String, date: String, hour: Str
         ).on(
 	  'name -> name,
 	  'password -> password
-        ).as ( User.simple.singleOpt )
+        ).as( User.simple.singleOpt )
       }
     } 
   }
-
